@@ -48,18 +48,31 @@ def bakery_by_id(id):
 
 @app.route('/baked_goods/by_price')
 def baked_goods_by_price():
-    goods_by_price = BakedGood.query.order_by("price").all()
-    goods_dict = goods_by_price.to_dict()
+    goods_list = list(reversed([item.to_dict() for item in BakedGood.query.order_by("price").all()]))
+    
+    # long form lines 54 -  to 58 works but line 51 is better(worked out without help this time... also note to self - .reverse() does Not work for the list comp as it returns None)
+    # goods_list = []
+    # for item in BakedGood.query.order_by("price").all():
+    #     goods_dict = item.to_dict()
+    #     goods_list.append(goods_dict)
+    # goods_list.reverse()
 
     response = make_response(
-        goods_dict,
+        goods_list,
         200
     )
     return response
 
 @app.route('/baked_goods/most_expensive')
 def most_expensive_baked_good():
-    return ''
+    goods_list = [item.to_dict() for item in BakedGood.query.order_by("price").all()]
+    most_exp = goods_list[-1]
+
+    response = make_response(
+        most_exp,
+        200
+    )
+    return response
 
 if __name__ == '__main__':
     app.run(port=5555, debug=True)
